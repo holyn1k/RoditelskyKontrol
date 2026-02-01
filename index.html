@@ -38,11 +38,7 @@
     </header>
 
     <main class="flex-1 relative p-6 overflow-y-auto">
-        <div id="auth-error-msg" class="hidden p-4 mb-4 bg-red-50 text-red-600 text-xs rounded-xl border border-red-100">
-            Ошибка конфигурации Firebase.
-        </div>
-
-        <!-- РОЛИ -->
+        <!-- ROLE SELECTION -->
         <div id="view-role-selection" class="view-section active h-full justify-center gap-4">
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-black text-slate-800">Кто зашел?</h2>
@@ -57,83 +53,57 @@
             </button>
         </div>
 
-        <!-- SETUP РОДИТЕЛЯ -->
-        <div id="view-parent-setup" class="view-section space-y-6">
-            <h2 class="text-xl font-bold text-slate-800">Ваш Семейный ID</h2>
-            <div class="p-8 bg-indigo-50 rounded-[2rem] text-center border-2 border-indigo-100">
-                <span id="display-family-id" class="text-4xl font-mono font-black text-indigo-600 tracking-[0.2em]">......</span>
-            </div>
-            <button id="btn-parent-go" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">К НАСТРОЙКАМ ТЕСТА</button>
-        </div>
-
-        <!-- DASHBOARD РОДИТЕЛЯ -->
+        <!-- PARENT DASHBOARD -->
         <div id="view-parent-dash" class="view-section space-y-5">
             <div class="flex items-center gap-2 mb-2">
                 <div class="w-2 h-8 bg-indigo-600 rounded-full"></div>
                 <h2 class="text-xl font-bold text-slate-800">Генератор заданий</h2>
             </div>
-
             <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Сложность (Класс)</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Класс ребенка</label>
                     <div class="grid grid-cols-3 gap-2 mt-1">
-                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all active" data-val="1-3">1-3 кл</button>
-                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="4-5">4-5 кл</button>
-                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="6-9">6-9 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all active" data-val="1-4">1-4 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="5-9">5-9 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="10-11">10-11 кл</button>
                     </div>
                 </div>
-
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Предмет</label>
                     <select id="p-subject" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl outline-none focus:border-indigo-400 transition-all mt-1">
+                        <option value="Математика">Математика</option>
+                        <option value="Русский язык">Русский язык</option>
+                        <option value="Английский язык">Английский язык</option>
+                        <option value="Физика">Физика</option>
+                        <option value="Биология">Биология</option>
                     </select>
                 </div>
-
-                <div id="other-subject-container" class="hidden">
-                    <label class="text-[10px] font-bold text-indigo-500 uppercase ml-1">Своя тема</label>
-                    <input type="text" id="p-subject-other" placeholder="Напр: Столицы мира" class="w-full p-4 bg-white border-2 border-indigo-200 rounded-xl outline-none focus:border-indigo-600 transition-all mt-1">
-                </div>
-
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Количество задач: <span id="p-count-val" class="text-indigo-600">3</span></label>
-                    <input type="range" id="p-count" min="1" max="10" value="3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-2">
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Ключ доступа</label>
-                    <input type="text" id="p-code" placeholder="Напр: 2026" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-center outline-none focus:border-indigo-400 transition-all mt-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Код доступа</label>
+                    <input type="text" id="p-code" placeholder="Код для ребенка" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-center outline-none focus:border-indigo-400 transition-all mt-1">
                 </div>
             </div>
-            
             <button id="btn-send-task" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">
-                <i class="fas fa-paper-plane"></i> ОТПРАВИТЬ РЕБЕНКУ
+                ОТПРАВИТЬ ЗАДАНИЕ
             </button>
-            <p id="p-status" class="text-center text-xs font-bold"></p>
+            <p id="p-status" class="text-center text-xs font-bold text-green-600"></p>
         </div>
 
-        <!-- SETUP РЕБЕНКА -->
-        <div id="view-child-setup" class="view-section space-y-4">
-            <h2 class="text-xl font-bold">Подключение</h2>
-            <input type="text" id="input-family-id" placeholder="ID РОДИТЕЛЯ" class="w-full p-5 bg-slate-100 rounded-2xl uppercase text-center font-black tracking-widest text-2xl outline-none focus:border-orange-400">
-            <button id="btn-link-child" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-lg">ПОДКЛЮЧИТЬСЯ</button>
-        </div>
-
-        <!-- DASHBOARD РЕБЕНКА -->
+        <!-- CHILD DASHBOARD -->
         <div id="view-child-dash" class="view-section h-full justify-center text-center">
-            <div id="no-task" class="space-y-4">
-                <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-300"><i class="fas fa-hourglass-half text-3xl"></i></div>
-                <p class="text-slate-400 font-medium">Ждем задание от родителей...</p>
+            <div id="no-task">
+                <p class="text-slate-400 font-medium">Ожидание задания от родителя...</p>
             </div>
             <div id="has-task" class="hidden space-y-6">
-                <div class="p-8 bg-orange-50 rounded-[2.5rem] border-2 border-orange-100">
-                    <h2 id="c-task-title" class="text-2xl font-black text-orange-800">...</h2>
-                    <p id="c-task-info" class="text-sm text-orange-600 mt-2 font-bold"></p>
+                <div class="p-8 bg-orange-50 rounded-3xl border-2 border-orange-100">
+                    <h2 id="c-task-title" class="text-2xl font-black text-orange-800 uppercase">...</h2>
+                    <p class="text-sm text-orange-600 mt-2 font-bold">Нужно решить 3 задачи</p>
                 </div>
-                <button id="btn-start-solve" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-lg">ПРИНЯТЬ И РЕШИТЬ</button>
+                <button id="btn-start-solve" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-lg">НАЧАТЬ ТЕСТ</button>
             </div>
         </div>
 
-        <!-- ЭКРАН РЕШЕНИЯ -->
+        <!-- SOLVE SCREEN -->
         <div id="view-solve" class="view-section h-full">
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-2">
@@ -143,24 +113,18 @@
                 <div id="error-count" class="text-red-500 font-bold text-[10px] uppercase bg-red-50 px-3 py-1 rounded-full">Ошибки: 0/3</div>
             </div>
             <div id="q-area" class="flex-1 flex flex-col justify-center">
-                <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] text-center mb-8 shadow-2xl relative">
-                    <p id="q-text" class="text-lg leading-relaxed font-medium">Готовим ваш вопрос...</p>
+                <div class="bg-slate-900 text-white p-8 rounded-3xl text-center mb-8 shadow-2xl">
+                    <p id="q-text" class="text-lg leading-relaxed font-medium">Генерируем вопрос...</p>
                 </div>
                 <div id="options-grid" class="grid gap-3"></div>
             </div>
         </div>
 
-        <!-- БЛОКИРОВКА / ФИНАЛ -->
-        <div id="view-lockout" class="view-section h-full justify-center text-center">
-            <i class="fas fa-lock text-6xl text-red-500 mb-6"></i>
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">ДОСТУП ОГРАНИЧЕН</h2>
-            <div id="timer-display" class="text-5xl font-mono font-black text-red-600 mb-6">10:00</div>
-        </div>
-
+        <!-- FINAL CODE -->
         <div id="view-final-code" class="view-section h-full justify-center text-center">
-            <h2 class="text-2xl font-black text-slate-800 mb-2">УСПЕХ!</h2>
-            <div class="p-10 bg-indigo-600 text-white rounded-[3rem] text-5xl font-black tracking-[0.2em]" id="final-key">----</div>
-            <button id="btn-finish" class="mt-12 text-slate-400 font-bold">ЗАВЕРШИТЬ</button>
+            <h2 class="text-2xl font-black text-slate-800 mb-2">ГОТОВО!</h2>
+            <div class="p-10 bg-indigo-600 text-white rounded-3xl text-5xl font-black tracking-widest" id="final-key">----</div>
+            <button id="btn-finish" class="mt-8 text-slate-400 font-bold">ЗАВЕРШИТЬ</button>
         </div>
     </main>
 </div>
@@ -170,15 +134,13 @@
     import { getFirestore, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    // Твой конфиг
     const firebaseConfig = {
         apiKey: "AIzaSyBIQjy3dFSGd9QGgV4BatCzdJTmdZ0iZi4",
         authDomain: "mesenger-12877.firebaseapp.com",
         projectId: "mesenger-12877",
         storageBucket: "mesenger-12877.firebasestorage.app",
         messagingSenderId: "1092702050769",
-        appId: "1:1092702050769:web:43339478e22b80d5c368f0",
-        measurementId: "G-XG5906V6G2"
+        appId: "1:1092702050769:web:43339478e22b80d5c368f0"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -187,47 +149,16 @@
     const appId = "smartkey-gh-deployment";
 
     const OPENROUTER_API_KEY = "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";
-    const AI_MODEL = "google/gemini-2.0-flash-exp:free";
 
-    let familyId = localStorage.getItem('sk_family_id');
     let userRole = localStorage.getItem('sk_role');
     let activeTask = null;
     let currentStep = 0;
     let errorCount = 0;
-    let selectedDiff = "1-3";
-
-    const subjectsByDiff = {
-        "1-3": ["Математика", "Русский язык", "Окружающий мир", "Логика", "Другое"],
-        "4-5": ["Математика", "Русский язык", "Литература", "Английский язык", "Логика", "Другое"],
-        "6-9": ["Алгебра", "Геометрия", "Физика", "Биология", "История", "География", "Другое"]
-    };
+    let selectedDiff = "1-4";
 
     function switchView(id) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-        const el = document.getElementById(`view-${id}`);
-        if(el) el.classList.add('active');
-    }
-
-    const safeSignIn = async () => {
-        try { return await signInAnonymously(auth); } catch(e) { console.error(e); }
-    };
-
-    function updateSubjects() {
-        const select = document.getElementById('p-subject');
-        if(!select) return;
-        select.innerHTML = '';
-        subjectsByDiff[selectedDiff].forEach(s => {
-            const opt = document.createElement('option');
-            opt.value = s; opt.innerText = s;
-            select.appendChild(opt);
-        });
-        checkOtherField();
-    }
-
-    function checkOtherField() {
-        const pSub = document.getElementById('p-subject');
-        const isOther = pSub.value === "Другое";
-        document.getElementById('other-subject-container').style.display = isOther ? "block" : "none";
+        document.getElementById(`view-${id}`).classList.add('active');
     }
 
     document.querySelectorAll('.diff-btn').forEach(btn => {
@@ -235,59 +166,46 @@
             document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedDiff = btn.dataset.val;
-            updateSubjects();
         }
     });
 
-    const pSub = document.getElementById('p-subject');
-    if(pSub) pSub.onchange = checkOtherField;
-    const pCount = document.getElementById('p-count');
-    if(pCount) pCount.oninput = (e) => document.getElementById('p-count-val').innerText = e.target.value;
-
-    const selectRole = async (role) => {
-        userRole = role;
-        localStorage.setItem('sk_role', role);
-        await safeSignIn();
-        if (role === 'parent') {
-            if (!familyId) {
-                familyId = Math.random().toString(36).substring(2, 8).toUpperCase();
-                localStorage.setItem('sk_family_id', familyId);
-            }
-            document.getElementById('display-family-id').innerText = familyId;
-            switchView('parent-setup');
-            updateSubjects();
-        } else {
-            switchView('child-setup');
-        }
+    document.getElementById('btn-role-parent').onclick = async () => {
+        userRole = 'parent';
+        localStorage.setItem('sk_role', 'parent');
+        await signInAnonymously(auth);
+        switchView('parent-dash');
     };
 
-    document.getElementById('btn-role-parent').onclick = () => selectRole('parent');
-    document.getElementById('btn-role-child').onclick = () => selectRole('child');
-    document.getElementById('btn-parent-go').onclick = () => switchView('parent-dash');
-    document.getElementById('logout-btn').onclick = () => { localStorage.clear(); location.reload(); };
-    
-    document.getElementById('btn-link-child').onclick = async () => {
-        familyId = document.getElementById('input-family-id').value.toUpperCase().trim();
-        localStorage.setItem('sk_family_id', familyId);
-        await safeSignIn();
+    document.getElementById('btn-role-child').onclick = async () => {
+        userRole = 'child';
+        localStorage.setItem('sk_role', 'child');
+        await signInAnonymously(auth);
         switchView('child-dash');
         listenForTasks();
     };
 
     document.getElementById('btn-send-task').onclick = async () => {
         const sub = document.getElementById('p-subject').value;
-        const other = document.getElementById('p-subject-other').value;
-        const data = {
-            subject: sub === "Другое" ? `Другое (${other})` : sub,
-            real_subject: sub === "Другое" ? other : sub,
-            difficulty: selectedDiff,
-            count: parseInt(document.getElementById('p-count').value),
-            code: document.getElementById('p-code').value || "1234",
+        const code = document.getElementById('p-code').value || "1234";
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', 'global_test'), {
+            subject: sub,
+            diff: selectedDiff,
+            code: code,
             ts: Date.now()
-        };
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId), data);
-        document.getElementById('p-status').innerText = "✅ ОТПРАВЛЕНО";
+        });
+        document.getElementById('p-status').innerText = "✅ ЗАДАНИЕ ОТПРАВЛЕНО";
     };
+
+    function listenForTasks() {
+        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', 'global_test'), (snap) => {
+            if (snap.exists()) {
+                activeTask = snap.data();
+                document.getElementById('no-task').classList.add('hidden');
+                document.getElementById('has-task').classList.remove('hidden');
+                document.getElementById('c-task-title').innerText = activeTask.subject;
+            }
+        });
+    }
 
     document.getElementById('btn-start-solve').onclick = () => {
         currentStep = 0; errorCount = 0;
@@ -295,32 +213,19 @@
         loadAIQuestion();
     };
 
-    function listenForTasks() {
-        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId), (snap) => {
-            if (snap.exists()) {
-                activeTask = snap.data();
-                document.getElementById('no-task').classList.add('hidden');
-                document.getElementById('has-task').classList.remove('hidden');
-                document.getElementById('c-task-title').innerText = activeTask.subject;
-                document.getElementById('c-task-info').innerText = `${activeTask.count} задач • ${activeTask.difficulty} класс`;
-            }
-        });
-    }
-
-    // ТА САМАЯ ЛОГИКА ИИ, КОТОРУЮ ТЫ ПРОСИЛ
+    // ГЕНЕРАЦИЯ ПО ПРЕДМЕТУ - ИСПРАВЛЕННАЯ ЛОГИКА
     async function loadAIQuestion() {
         const loader = document.getElementById('solve-loader');
         loader.classList.remove('hidden');
-        document.getElementById('step-counter').innerText = `Вопрос ${currentStep + 1}/${activeTask.count}`;
+        document.getElementById('step-counter').innerText = `Вопрос ${currentStep + 1}/3`;
         
-        // Четкая инструкция для ИИ под конкретный предмет
-        const prompt = `Действуй как профессиональный учитель. 
-        Предмет: ${activeTask.real_subject}. 
-        Уровень сложности: ${activeTask.difficulty} класс российской школы.
-        Задача: Сгенерируй ОДНУ сложную задачу или вопрос строго по этому предмету. 
-        Если это русский - вопрос по грамматике/орфографии. Если физика - на знание законов или расчет.
-        НИКАКОЙ простой арифметики, если предмет не математика.
-        Верни ответ в JSON: {"q": "Текст вопроса", "opts": ["вариант1", "вариант2", "вариант3", "вариант4"], "a": "правильный вариант"}`;
+        const prompt = `Генерируй сложный вопрос для учащегося ${activeTask.diff} класса по предмету "${activeTask.subject}". 
+        Важно: Вопрос должен строго соответствовать специфике предмета.
+        Если русский: вопрос про правописание, пунктуацию или морфологию.
+        Если физика: вопрос про законы, величины или краткая задача.
+        Если биология: вопрос про клетки, органы или систематику.
+        Никакой простой арифметики, если предмет не математика.
+        Верни ответ СТРОГО в JSON формате: {"q": "Текст вопроса", "opts": ["вариант1", "вариант2", "вариант3", "вариант4"], "a": "правильный текст"}`;
 
         try {
             const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -330,18 +235,30 @@
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: AI_MODEL,
+                    model: "google/gemini-2.0-flash-exp:free",
                     messages: [{ role: "user", content: prompt }]
                 })
             });
 
             const data = await resp.json();
-            const task = JSON.parse(data.choices[0].message.content.replace(/```json|```/g, ""));
+            let rawText = data.choices[0].message.content;
+            
+            // Очистка JSON от возможных Markdown тегов ```json ... ```
+            const cleanJson = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+            const task = JSON.parse(cleanJson);
+            
             renderTask(task);
         } catch (e) {
-            console.error(e);
-            renderTask({ q: "Ошибка связи с ИИ. Нажмите любой вариант.", opts: ["Ок", "Ошибка", "Ждать", "Пропуск"], a: "Ок" });
-        } finally { loader.classList.add('hidden'); }
+            console.error("AI Error:", e);
+            // Фолбэк на случай ошибки парсинга
+            renderTask({
+                q: `Сложный вопрос по предмету ${activeTask.subject}. Выберите верное утверждение.`,
+                opts: ["Вариант 1 (Верно)", "Вариант 2", "Вариант 3", "Вариант 4"],
+                a: "Вариант 1 (Верно)"
+            });
+        } finally {
+            loader.classList.add('hidden');
+        }
     }
 
     function renderTask(task) {
@@ -352,19 +269,21 @@
         
         task.opts.forEach(opt => {
             const b = document.createElement('button');
-            b.className = "w-full p-4 bg-slate-100 rounded-2xl font-bold text-slate-700 hover:bg-indigo-50 border-2 border-transparent transition-all";
+            b.className = "w-full p-4 bg-slate-100 rounded-2xl font-bold text-slate-700 hover:bg-indigo-50 transition-all";
             b.innerText = opt;
             b.onclick = () => {
-                if (String(opt).toLowerCase().trim() === String(task.a).toLowerCase().trim()) {
+                if (opt === task.a) {
                     currentStep++;
-                    if (currentStep >= activeTask.count) {
+                    if (currentStep >= 3) {
                         document.getElementById('final-key').innerText = activeTask.code;
                         switchView('final-code');
                     } else loadAIQuestion();
                 } else {
                     errorCount++;
-                    if (errorCount >= 3) switchView('lockout');
-                    else {
+                    if (errorCount >= 3) {
+                        alert("Слишком много ошибок! Попробуй позже.");
+                        location.reload();
+                    } else {
                         document.getElementById('error-count').innerText = `Ошибки: ${errorCount}/3`;
                         loadAIQuestion();
                     }
@@ -375,23 +294,15 @@
     }
 
     document.getElementById('btn-finish').onclick = async () => {
-        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId));
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', 'global_test'));
         location.reload();
     };
 
-    window.onload = async () => {
-        if (familyId && userRole) {
-            await safeSignIn();
-            if (userRole === 'parent') {
-                document.getElementById('display-family-id').innerText = familyId;
-                switchView('parent-dash');
-                updateSubjects();
-            } else {
-                switchView('child-dash');
-                listenForTasks();
-            }
-        }
+    document.getElementById('logout-btn').onclick = () => {
+        localStorage.clear();
+        location.reload();
     };
 </script>
 </body>
 </html>
+

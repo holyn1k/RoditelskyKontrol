@@ -38,109 +38,96 @@
     </header>
 
     <main class="flex-1 relative p-6 overflow-y-auto">
-        <!-- ROLE SELECTION -->
         <div id="view-role-selection" class="view-section active h-full justify-center gap-4">
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-black text-slate-800">Кто зашел?</h2>
             </div>
             <button id="btn-role-parent" class="w-full p-6 border-2 border-indigo-100 rounded-3xl hover:border-indigo-500 flex items-center gap-4 text-left transition-all group">
                 <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all"><i class="fas fa-user-shield"></i></div>
-                <div><b class="block text-lg">Родитель</b><span class="text-xs text-slate-500">Настроить задачи и контроль</span></div>
+                <div><b class="block text-lg">Родитель</b><span class="text-xs text-slate-500">Настроить задачи</span></div>
             </button>
             <button id="btn-role-child" class="w-full p-6 border-2 border-orange-100 rounded-3xl hover:border-orange-500 flex items-center gap-4 text-left transition-all group">
                 <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all"><i class="fas fa-child"></i></div>
-                <div><b class="block text-lg">Ребенок</b><span class="text-xs text-slate-500">Решить тест для входа</span></div>
+                <div><b class="block text-lg">Ребенок</b><span class="text-xs text-slate-500">Решить тест</span></div>
             </button>
         </div>
 
-        <!-- PARENT: ID SETUP -->
         <div id="view-parent-setup" class="view-section space-y-6">
             <h2 class="text-xl font-bold text-slate-800">ID Вашей Семьи</h2>
             <div class="p-8 bg-indigo-50 rounded-[2rem] text-center border-2 border-indigo-100">
                 <span id="display-family-id" class="text-4xl font-mono font-black text-indigo-600 tracking-[0.2em]">......</span>
             </div>
-            <button id="btn-parent-go" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">ПЕРЕЙТИ К НАСТРОЙКАМ</button>
+            <button id="btn-parent-go" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">НАСТРОИТЬ ЗАДАНИЯ</button>
         </div>
 
-        <!-- PARENT DASHBOARD -->
         <div id="view-parent-dash" class="view-section space-y-5">
-            <div class="flex items-center gap-2 mb-2">
-                <div class="w-2 h-8 bg-indigo-600 rounded-full"></div>
-                <h2 class="text-xl font-bold text-slate-800">Генератор заданий</h2>
-            </div>
+            <h2 class="text-xl font-bold text-slate-800">Параметры контроля</h2>
             <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Класс ребенка</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Сложность</label>
                     <div class="grid grid-cols-3 gap-2 mt-1">
-                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all active" data-val="1-4">1-4 кл</button>
-                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="5-9">5-9 кл</button>
-                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="10-11">10-11 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold active" data-val="1-4">1-4 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold" data-val="5-9">5-9 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold" data-val="10-11">10-11 кл</button>
                     </div>
                 </div>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Предмет</label>
-                    <select id="p-subject" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl outline-none focus:border-indigo-400 transition-all mt-1">
+                    <select id="p-subject" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl outline-none focus:border-indigo-400">
                         <option value="Русский язык">Русский язык</option>
                         <option value="Математика">Математика</option>
                         <option value="Английский язык">Английский язык</option>
                         <option value="Физика">Физика</option>
-                        <option value="Биология">Биология</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Код доступа</label>
-                    <input type="text" id="p-code" placeholder="Код для разблокировки" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-center outline-none focus:border-indigo-400 transition-all mt-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Ключ доступа</label>
+                    <input type="text" id="p-code" placeholder="Напр: 2025" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-center outline-none focus:border-indigo-400">
                 </div>
             </div>
-            <button id="btn-send-task" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">
-                ОТПРАВИТЬ ЗАДАНИЕ
-            </button>
+            <button id="btn-send-task" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-lg">ОТПРАВИТЬ РЕБЕНКУ</button>
             <p id="p-status" class="text-center text-xs font-bold text-green-600"></p>
         </div>
 
-        <!-- CHILD SETUP -->
         <div id="view-child-setup" class="view-section space-y-4">
             <h2 class="text-xl font-bold">Подключение</h2>
             <input type="text" id="input-family-id" placeholder="ID РОДИТЕЛЯ" class="w-full p-5 bg-slate-100 rounded-2xl uppercase text-center font-black tracking-widest text-2xl outline-none">
-            <button id="btn-link-child" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold">ПОДКЛЮЧИТЬСЯ</button>
+            <button id="btn-link-child" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold">ВОЙТИ</button>
         </div>
 
-        <!-- CHILD DASHBOARD -->
         <div id="view-child-dash" class="view-section h-full justify-center text-center">
             <div id="no-task">
-                <p class="text-slate-400 font-medium">Ожидание задания от родителя...</p>
+                <p class="text-slate-400 font-medium">Ждем задачу от родителей...</p>
             </div>
             <div id="has-task" class="hidden space-y-6">
                 <div class="p-8 bg-orange-50 rounded-3xl border-2 border-orange-100">
-                    <h2 id="c-task-title" class="text-2xl font-black text-orange-800 uppercase">...</h2>
-                    <p class="text-sm text-orange-600 mt-2 font-bold">Нужно решить 3 задачи</p>
+                    <h2 id="c-task-title" class="text-2xl font-black text-orange-800 uppercase">ПРЕДМЕТ</h2>
+                    <p class="text-sm text-orange-600 mt-2 font-bold">Реши 3 задания</p>
                 </div>
-                <button id="btn-start-solve" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-lg">НАЧАТЬ ТЕСТ</button>
+                <button id="btn-start-solve" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-lg">НАЧАТЬ</button>
             </div>
         </div>
 
-        <!-- SOLVE SCREEN -->
         <div id="view-solve" class="view-section h-full">
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-2">
                     <div id="solve-loader" class="loader"></div>
-                    <span id="step-counter" class="text-xs font-bold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full">Загрузка...</span>
+                    <span id="step-counter" class="text-xs font-bold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full">...</span>
                 </div>
                 <div id="error-count" class="text-red-500 font-bold text-[10px] uppercase bg-red-50 px-3 py-1 rounded-full">Ошибки: 0/3</div>
             </div>
             <div id="q-area" class="flex-1 flex flex-col justify-center">
-                <div class="bg-slate-900 text-white p-8 rounded-3xl text-center mb-8 shadow-2xl min-h-[150px] flex items-center justify-center">
-                    <p id="q-text" class="text-lg leading-relaxed font-medium">Генерируем вопрос...</p>
+                <div class="bg-slate-900 text-white p-8 rounded-3xl text-center mb-8 shadow-2xl min-h-[160px] flex items-center justify-center">
+                    <p id="q-text" class="text-lg leading-relaxed font-medium">Загрузка...</p>
                 </div>
                 <div id="options-grid" class="grid gap-3"></div>
             </div>
         </div>
 
-        <!-- FINAL CODE -->
         <div id="view-final-code" class="view-section h-full justify-center text-center">
             <h2 class="text-2xl font-black text-slate-800 mb-2">ГОТОВО!</h2>
             <div class="p-10 bg-indigo-600 text-white rounded-3xl text-5xl font-black tracking-widest" id="final-key">----</div>
-            <button id="btn-finish" class="mt-8 text-slate-400 font-bold">ЗАВЕРШИТЬ</button>
+            <button onclick="location.reload()" class="mt-8 text-slate-400 font-bold">ЗАВЕРШИТЬ</button>
         </div>
     </main>
 </div>
@@ -155,16 +142,16 @@
         authDomain: "mesenger-12877.firebaseapp.com",
         projectId: "mesenger-12877",
         storageBucket: "mesenger-12877.firebasestorage.app",
+        messagingSenderId: "1092702050769",
         appId: "1:1092702050769:web:43339478e22b80d5c368f0"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const appId = "smartkey-v2-stable";
+    const appId = "smartkey-stable-v1";
 
     const OPENROUTER_API_KEY = "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";
-    const AI_MODEL = "google/gemini-2.0-flash-exp:free";
 
     let familyId = localStorage.getItem('sk_family_id');
     let userRole = localStorage.getItem('sk_role');
@@ -216,7 +203,7 @@
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId), {
             subject: sub, diff: selectedDiff, code: code, ts: Date.now()
         });
-        document.getElementById('p-status').innerText = "✅ ЗАДАНИЕ ОТПРАВЛЕНО";
+        document.getElementById('p-status').innerText = "✅ ОТПРАВЛЕНО";
     };
 
     function listenForTasks() {
@@ -241,54 +228,30 @@
         const loader = document.getElementById('solve-loader');
         loader.classList.remove('hidden');
         document.getElementById('step-counter').innerText = `Вопрос ${currentStep + 1}/3`;
-        
-        // Ультра-жесткий промпт для пресечения математики
-        const prompt = `Ты строгий учитель. Сгенерируй ОДНУ задачу.
-        ПРЕДМЕТ: ${activeTask.subject}
-        КЛАСС: ${activeTask.diff}
-        
-        ПРАВИЛА:
-        1. Если предмет "Русский язык", "Биология" или "Английский" — ЗАПРЕЩЕНО использовать цифры, сложение, вычитание и математические примеры. Вопрос должен быть чисто текстовым по теме.
-        2. Верни ответ СТРОГО в формате JSON без пояснений.
-        
-        JSON ФОРМАТ: {"q": "Текст вопроса", "opts": ["вариант1", "вариант2", "вариант3", "вариант4"], "a": "текст правильного ответа"}`;
+
+        const prompt = `Генерируй ОДНУ задачу по предмету "${activeTask.subject}" для ${activeTask.diff} класса.
+        ПРАВИЛА: 
+        1. Если предмет "Русский язык" или "Английский" — ЗАПРЕЩЕНО использовать математику и цифры. Только текст и правила.
+        2. Верни СТРОГО JSON: {"q": "текст", "opts": ["вариант1", "вариант2", "вариант3", "вариант4"], "a": "правильный текст"}`;
 
         try {
             const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                    "Content-Type": "application/json"
-                },
+                headers: { "Authorization": `Bearer ${OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    model: AI_MODEL,
-                    messages: [
-                        { role: "system", content: "You are a teacher. Respond only with JSON." },
-                        { role: "user", content: prompt }
-                    ],
-                    temperature: 0.4
+                    model: "google/gemini-2.0-flash-exp:free",
+                    messages: [{ role: "system", content: "You are a teacher. Respond only with JSON." }, { role: "user", content: prompt }]
                 })
             });
 
             const data = await resp.json();
-            const content = data.choices[0].message.content.trim();
-            
-            // Надежное извлечение JSON (чистит от ```json и прочего мусора)
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) throw new Error("JSON not found");
-            
-            const task = JSON.parse(jsonMatch[0]);
+            const text = data.choices[0].message.content;
+            const task = JSON.parse(text.match(/\{[\s\S]*\}/)[0]);
             renderTask(task);
         } catch (e) {
-            console.error("AI Error:", e);
-            renderTask({
-                q: `Ошибка генерации. Выберите верный ответ по теме ${activeTask.subject}.`,
-                opts: ["Правильный вариант", "Ложный 1", "Ложный 2", "Ложный 3"],
-                a: "Правильный вариант"
-            });
-        } finally {
-            loader.classList.add('hidden');
-        }
+            console.error(e);
+            renderTask({ q: "Проверка: 1+1?", opts: ["1", "2", "3", "4"], a: "2" });
+        } finally { loader.classList.add('hidden'); }
     }
 
     function renderTask(task) {
@@ -296,13 +259,12 @@
         document.getElementById('error-count').innerText = `Ошибки: ${errorCount}/3`;
         const grid = document.getElementById('options-grid');
         grid.innerHTML = '';
-        
         task.opts.forEach(opt => {
             const b = document.createElement('button');
             b.className = "w-full p-4 bg-slate-100 rounded-2xl font-bold text-slate-700 hover:bg-indigo-50 border-2 border-transparent active:border-indigo-500 transition-all";
             b.innerText = opt;
             b.onclick = () => {
-                if (String(opt).trim().toLowerCase() === String(task.a).trim().toLowerCase()) {
+                if (opt === task.a) {
                     currentStep++;
                     if (currentStep >= 3) {
                         document.getElementById('final-key').innerText = activeTask.code;
@@ -310,10 +272,8 @@
                     } else loadAIQuestion();
                 } else {
                     errorCount++;
-                    if (errorCount >= 3) {
-                        alert("Слишком много ошибок! Попробуй сначала.");
-                        location.reload();
-                    } else {
+                    if (errorCount >= 3) { alert("3 ошибки! Попробуй сначала."); location.reload(); }
+                    else {
                         document.getElementById('error-count').innerText = `Ошибки: ${errorCount}/3`;
                         loadAIQuestion();
                     }
@@ -322,13 +282,6 @@
             grid.appendChild(b);
         });
     }
-
-    document.getElementById('btn-finish').onclick = async () => {
-        try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId)); } catch(e) {}
-        location.reload();
-    };
-
-    document.getElementById('logout-btn').onclick = () => { localStorage.clear(); location.reload(); };
 
     window.onload = async () => {
         if(familyId && userRole) {
@@ -342,6 +295,7 @@
             }
         }
     };
+    document.getElementById('logout-btn').onclick = () => { localStorage.clear(); location.reload(); };
 </script>
 </body>
-    </html>
+                            </html>

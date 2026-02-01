@@ -1,0 +1,395 @@
+laceholder="НАПРИМЕР: AB12CD" class="w-full p-5 bg-slate-100 border-none rounded-2xl font-bold text-slate-700 uppercase tracking-widest text-center outline-none focus:ring-2 focus:ring-orange-500">
+            <button onclick="linkChildToFamily()" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-bold shadow-lg">ПОДКЛЮЧИТЬСЯ</button>
+        </div>
+
+        <!-- 4. ПАНЕЛЬ РОДИТЕЛЯ -->
+        <div id="view-parent-dash" class="hidden fade-in space-y-6">
+            <div class="bg-indigo-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold">Управление</h2>
+                    <p class="text-indigo-300 text-[10px] uppercase font-bold tracking-wider">Синхронизация включена</p>
+                </div>
+                <i class="fas fa-cloud text-indigo-400"></i>
+            </div>
+
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Предмет или Тема</label>
+                    <input type="text" id="p-subject" placeholder="Напр: Математика, Английский..." class="w-full p-4 bg-slate-100 border-none rounded-2xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Класс / Уровень</label>
+                        <input type="text" id="p-grade" placeholder="Напр: 5 класс" class="w-full p-4 bg-slate-100 border-none rounded-2xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Ключ доступа</label>
+                        <input type="text" id="p-code" placeholder="Напр: 1234" class="w-full p-4 bg-slate-100 border-none rounded-2xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+            </div>
+
+            <button id="send-btn" onclick="sendTaskToCloud()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-extrabold shadow-lg shadow-indigo-200 active:scale-95 transition-transform">ОТПРАВИТЬ ЗАДАНИЕ</button>
+            <p id="p-status" class="text-center text-xs text-slate-400 h-4"></p>
+        </div>
+
+        <!-- 5. ПАНЕЛЬ РЕБЕНКА -->
+        <div id="view-child-dash" class="hidden fade-in h-full flex flex-col text-center">
+            <div id="no-task" class="my-auto space-y-4">
+                <div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto text-indigo-300 animate-pulse">
+                    <i class="fas fa-satellite-dish text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-slate-800">Ожидание задания</h3>
+                <p class="text-sm text-slate-500 px-10">Попросите родителя отправить новый тест для разблокировки телефона.</p>
+            </div>
+            <div id="has-task" class="hidden space-y-6 my-auto">
+                <div class="p-8 bg-orange-50 rounded-3xl border-2 border-orange-100">
+                    <p class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2">Новое испытание</p>
+                    <h2 id="c-task-title" class="text-2xl font-black text-slate-800">...</h2>
+                    <p id="c-task-grade" class="text-slate-500 text-xs mt-2 font-bold uppercase"></p>
+                </div>
+                <button onclick="startSolving()" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-extrabold shadow-xl shadow-orange-100 active:scale-95 transition-transform">НАЧАТЬ РЕШЕНИЕ</button>
+            </div>
+        </div>
+
+        <!-- 6. ЭКРАН РЕШЕНИЯ -->
+        <div id="view-solve" class="hidden fade-in flex flex-col h-full">
+            <div class="flex justify-between items-center mb-8">
+                <div id="solve-loader" class="loader hidden"></div>
+                <div class="flex flex-col items-end">
+                    <div class="flex gap-2 mb-2" id="progress-dots">
+                        <div class="w-3 h-3 rounded-full bg-slate-200"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200"></div>
+                    </div>
+                    <div id="error-count" class="text-[10px] font-black text-red-500 uppercase tracking-tighter">Ошибки: 0/3</div>
+                </div>
+            </div>
+            <div id="question-box" class="flex-1 flex flex-col justify-center">
+                <div class="bg-slate-900 text-white p-8 rounded-[40px] shadow-2xl mb-8 text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-indigo-500 opacity-50"></div>
+                    <p id="q-text" class="text-lg font-bold leading-relaxed">...</p>
+                </div>
+                <div id="options-grid" class="grid grid-cols-1 gap-4"></div>
+            </div>
+        </div>
+
+        <!-- 7. ЭКРАН БЛОКИРОВКИ (ТАЙМЕР) -->
+        <div id="view-lockout" class="hidden fade-in flex flex-col items-center justify-center h-full text-center p-6">
+            <div class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-6">
+                <i class="fas fa-hourglass-half text-3xl animate-bounce"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800 mb-2">СЛИШКОМ МНОГО ОШИБОК</h2>
+            <p class="text-slate-500 text-sm mb-8">Ты слишком много раз ошибся. Отдохни 10 минут, подумай и попробуй снова.</p>
+            
+            <div class="bg-slate-100 w-full p-8 rounded-[40px] mb-8">
+                <div id="timer-display" class="text-5xl font-black text-slate-800 tracking-widest font-mono">10:00</div>
+            </div>
+
+            <button id="retry-btn" disabled onclick="restartAfterLockout()" class="w-full bg-slate-200 text-slate-400 py-5 rounded-2xl font-extrabold transition-all">ПОПРОБОВАТЬ СНОВА</button>
+        </div>
+
+        <!-- 8. ФИНАЛЬНЫЙ КОД -->
+        <div id="view-final-code" class="hidden fade-in flex flex-col items-center justify-center h-full text-center">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white mb-6 shadow-xl shadow-green-100 animate-bounce">
+                <i class="fas fa-check text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800 mb-2">ОТЛИЧНО!</h2>
+            <p class="text-slate-500 text-sm mb-8">Используй этот ключ для входа:</p>
+            <div class="p-10 bg-slate-900 rounded-[40px] shadow-2xl w-full">
+                <span id="final-key" class="text-6xl font-black tracking-[10px] text-indigo-400">----</span>
+            </div>
+            <button onclick="resetTask()" class="mt-10 text-slate-400 font-bold text-xs uppercase tracking-widest border-b border-slate-200 pb-1">Вернуться назад</button>
+        </div>
+
+    </main>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    const firebaseConfig = JSON.parse(__firebase_config);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'smartkey-v2-disciplinary';
+    const AI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=";
+
+    let familyId = localStorage.getItem('sk_family_id');
+    let userRole = localStorage.getItem('sk_role');
+    let activeTask = null;
+    let solveStep = 0;
+    let errorCount = 0;
+    let lockoutTimer = null;
+
+    function switchView(id) {
+        document.querySelectorAll('main > div').forEach(v => v.classList.add('hidden'));
+        const el = document.getElementById(`view-${id}`);
+        if (el) el.classList.remove('hidden');
+    }
+
+    const initAuth = async () => {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (e) { console.error(e); }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user && familyId) updateFamilyBadge();
+    });
+
+    function updateFamilyBadge() {
+        const badge = document.getElementById('family-badge');
+        badge.innerText = `ID: ${familyId}`;
+        badge.classList.remove('hidden');
+    }
+
+    window.selectRole = async (role) => {
+        userRole = role;
+        localStorage.setItem('sk_role', role);
+        await initAuth();
+        if (role === 'parent') {
+            if (!familyId) {
+                familyId = Math.random().toString(36).substring(2, 8).toUpperCase();
+                localStorage.setItem('sk_family_id', familyId);
+            }
+            document.getElementById('display-family-id').innerText = familyId;
+            switchView('parent-setup');
+        } else {
+            checkLockoutStatus() ? switchView('lockout') : switchView('child-setup');
+        }
+    };
+
+    window.logout = () => { localStorage.clear(); location.reload(); };
+    window.copyFamilyId = () => {
+        const text = document.getElementById('display-family-id').innerText;
+        const dummy = document.createElement("textarea");
+        document.body.appendChild(dummy);
+        dummy.value = text;
+        dummy.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummy);
+        alert("Скопировано!");
+    };
+
+    window.goToParentDash = () => switchView('parent-dash');
+
+    window.linkChildToFamily = async () => {
+        const input = document.getElementById('input-family-id').value.trim().toUpperCase();
+        if (input.length < 3) return alert("Введите корректный ID");
+        familyId = input;
+        localStorage.setItem('sk_family_id', familyId);
+        updateFamilyBadge();
+        if (checkLockoutStatus()) { startLockoutTimer(); switchView('lockout'); }
+        else { switchView('child-dash'); listenForTasks(); }
+    };
+
+    window.sendTaskToCloud = async () => {
+        if (!auth.currentUser || !familyId) return;
+        const btn = document.getElementById('send-btn');
+        const status = document.getElementById('p-status');
+        const data = {
+            subject: document.getElementById('p-subject').value.trim() || "Общие знания",
+            grade: document.getElementById('p-grade').value.trim() || "Смешанный",
+            code: document.getElementById('p-code').value.trim(),
+            timestamp: Date.now()
+        };
+        if (!data.code) return alert("Пожалуйста, укажите ключ доступа!");
+        btn.disabled = true;
+        try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId), data);
+            status.innerText = "✅ Отправлено!";
+            setTimeout(() => { btn.disabled = false; status.innerText = ""; }, 2000);
+        } catch (e) { btn.disabled = false; }
+    };
+
+    function listenForTasks() {
+        if (!auth.currentUser || !familyId) return;
+        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId), (snap) => {
+            if (snap.exists()) {
+                activeTask = snap.data();
+                document.getElementById('no-task').classList.add('hidden');
+                document.getElementById('has-task').classList.remove('hidden');
+                document.getElementById('c-task-title').innerText = activeTask.subject;
+                document.getElementById('c-task-grade').innerText = activeTask.grade;
+            } else {
+                activeTask = null;
+                document.getElementById('no-task').classList.remove('hidden');
+                document.getElementById('has-task').classList.add('hidden');
+            }
+        });
+    }
+
+    // ЛОГИКА ТЕСТИРОВАНИЯ
+    window.startSolving = () => {
+        if (checkLockoutStatus()) return switchView('lockout');
+        solveStep = 0;
+        errorCount = 0;
+        updateErrorDisplay();
+        switchView('solve');
+        loadAIQuestion();
+    };
+
+    async function loadAIQuestion() {
+        const loader = document.getElementById('solve-loader');
+        const qBox = document.getElementById('question-box');
+        loader.classList.remove('hidden');
+        qBox.style.opacity = "0.2";
+
+        const prompt = `Ты строгий учитель. Создай ОДНУ учебную задачу. Предмет: ${activeTask.subject}, Уровень: ${activeTask.grade}. 
+        Ответ в JSON: {"q": "Вопрос", "opts": ["вариант1", "вариант2", "вариант3", "вариант4"], "a": "текст правильного ответа"}. 
+        Никакого форматирования markdown. Язык: Русский.`;
+
+        try {
+            const res = await fetch(AI_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                })
+            });
+            const result = await res.json();
+            const task = JSON.parse(result.candidates[0].content.parts[0].text);
+            renderTask(task);
+        } catch (e) {
+            renderTask({ q: "2 * 2 + 2", opts: ["4", "6", "8", "2"], a: "6" });
+        } finally {
+            loader.classList.add('hidden');
+            qBox.style.opacity = "1";
+        }
+    }
+
+    function renderTask(task) {
+        document.getElementById('q-text').innerText = task.q;
+        const grid = document.getElementById('options-grid');
+        grid.innerHTML = '';
+        
+        const dots = document.getElementById('progress-dots').children;
+        for(let i=0; i<3; i++) dots[i].className = i < solveStep ? "w-3 h-3 rounded-full bg-indigo-500" : "w-3 h-3 rounded-full bg-slate-200";
+
+        task.opts.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = "w-full p-5 bg-white border-2 border-slate-100 rounded-2xl font-bold text-slate-700 hover:border-indigo-500 transition";
+            b.innerText = opt;
+            b.onclick = () => {
+                if (opt === task.a) {
+                    solveStep++;
+                    if (solveStep >= 3) {
+                        document.getElementById('final-key').innerText = activeTask.code;
+                        switchView('final-code');
+                    } else {
+                        loadAIQuestion();
+                    }
+                } else {
+                    handleWrongAnswer(b);
+                }
+            };
+            grid.appendChild(b);
+        });
+    }
+
+    function handleWrongAnswer(btn) {
+        errorCount++;
+        updateErrorDisplay();
+        btn.classList.add('border-red-500', 'bg-red-50', 'text-red-700');
+        
+        if (errorCount >= 3) {
+            setLockout();
+        } else {
+            // При ошибке генерируем НОВУЮ задачу, не даем тыкать в старой
+            setTimeout(() => {
+                loadAIQuestion();
+            }, 500);
+        }
+    }
+
+    function updateErrorDisplay() {
+        document.getElementById('error-count').innerText = `Ошибки: ${errorCount}/3`;
+        document.getElementById('error-count').className = errorCount > 0 ? "text-[10px] font-black text-red-500 uppercase tracking-tighter animate-pulse" : "text-[10px] font-black text-slate-300 uppercase tracking-tighter";
+    }
+
+    // ЛОГИКА БЛОКИРОВКИ
+    function setLockout() {
+        const until = Date.now() + (10 * 60 * 1000); // 10 минут
+        localStorage.setItem('sk_lockout', until);
+        startLockoutTimer();
+        switchView('lockout');
+    }
+
+    function checkLockoutStatus() {
+        const lockout = localStorage.getItem('sk_lockout');
+        if (!lockout) return false;
+        if (Date.now() > parseInt(lockout)) {
+            localStorage.removeItem('sk_lockout');
+            return false;
+        }
+        return true;
+    }
+
+    function startLockoutTimer() {
+        if (lockoutTimer) clearInterval(lockoutTimer);
+        const retryBtn = document.getElementById('retry-btn');
+        const display = document.getElementById('timer-display');
+        
+        lockoutTimer = setInterval(() => {
+            const until = parseInt(localStorage.getItem('sk_lockout'));
+            const diff = until - Date.now();
+            
+            if (diff <= 0) {
+                clearInterval(lockoutTimer);
+                display.innerText = "00:00";
+                retryBtn.disabled = false;
+                retryBtn.className = "w-full bg-indigo-600 text-white py-5 rounded-2xl font-extrabold shadow-lg";
+                retryBtn.innerText = "ПОПРОБОВАТЬ СНОВА";
+                return;
+            }
+
+            const m = Math.floor(diff / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+        }, 1000);
+    }
+
+    window.restartAfterLockout = () => {
+        clearInterval(lockoutTimer);
+        localStorage.removeItem('sk_lockout');
+        switchView('child-dash');
+    };
+
+    window.resetTask = async () => {
+        if (confirm("Удалить задание?")) {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId));
+        }
+        switchView('child-dash');
+    };
+
+    window.addEventListener('load', async () => {
+        if (familyId && userRole) {
+            await initAuth();
+            updateFamilyBadge();
+            if (userRole === 'parent') {
+                document.getElementById('display-family-id').innerText = familyId;
+                switchView('parent-dash');
+            } else {
+                if (checkLockoutStatus()) {
+                    startLockoutTimer();
+                    switchView('lockout');
+                } else {
+                    switchView('child-dash');
+                    listenForTasks();
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

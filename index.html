@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmartKey: Family Control</title>
+    <title>SmartKey: AI Family Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,88 +13,140 @@
         .view-section.active { display: flex; }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .difficulty-btn.active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
     </style>
 </head>
 <body>
 
 <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
-    <header class="p-4 flex justify-between items-center border-b bg-white z-20">
+    <header class="p-4 flex justify-between items-center border-b bg-white z-20 shadow-sm">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-                <i class="fas fa-key"></i>
+                <i class="fas fa-brain"></i>
             </div>
-            <h1 class="font-extrabold text-indigo-900 tracking-tight uppercase">SmartKey</h1>
+            <h1 class="font-extrabold text-indigo-900 tracking-tight uppercase">SmartKey AI</h1>
         </div>
         <div class="flex items-center gap-2">
             <div id="family-badge" class="hidden text-[10px] font-bold px-2 py-1 rounded bg-indigo-100 text-indigo-700 uppercase"></div>
-            <button id="logout-btn" class="text-slate-300 hover:text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+            <button id="logout-btn" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </header>
 
-    <main class="flex-1 relative p-6">
-        <!-- ВЫБОР РОЛИ -->
+    <main class="flex-1 relative p-6 overflow-y-auto">
+        <div id="auth-error-msg" class="hidden p-4 mb-4 bg-red-50 text-red-600 text-xs rounded-xl border border-red-100">
+            Ошибка конфигурации Firebase. Проверьте настройки.
+        </div>
+
+        <!-- РОЛИ -->
         <div id="view-role-selection" class="view-section active h-full justify-center gap-4">
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-black text-slate-800">Кто зашел?</h2>
             </div>
-            <button id="btn-role-parent" class="w-full p-6 border-2 border-indigo-100 rounded-3xl hover:border-indigo-500 flex items-center gap-4 text-left">
-                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600"><i class="fas fa-user-shield"></i></div>
-                <div><b class="block">Я родитель</b><span class="text-xs text-slate-500">Создать задание</span></div>
+            <button id="btn-role-parent" class="w-full p-6 border-2 border-indigo-100 rounded-3xl hover:border-indigo-500 flex items-center gap-4 text-left transition-all group">
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all"><i class="fas fa-user-shield"></i></div>
+                <div><b class="block text-lg">Родитель</b><span class="text-xs text-slate-500">Настроить задачи и контроль</span></div>
             </button>
-            <button id="btn-role-child" class="w-full p-6 border-2 border-orange-100 rounded-3xl hover:border-orange-500 flex items-center gap-4 text-left">
-                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600"><i class="fas fa-child"></i></div>
-                <div><b class="block">Я ребенок</b><span class="text-xs text-slate-500">Решить и войти</span></div>
+            <button id="btn-role-child" class="w-full p-6 border-2 border-orange-100 rounded-3xl hover:border-orange-500 flex items-center gap-4 text-left transition-all group">
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all"><i class="fas fa-child"></i></div>
+                <div><b class="block text-lg">Ребенок</b><span class="text-xs text-slate-500">Решить тест для входа</span></div>
             </button>
         </div>
 
-        <!-- НАСТРОЙКА РОДИТЕЛЯ -->
+        <!-- SETUP РОДИТЕЛЯ -->
         <div id="view-parent-setup" class="view-section space-y-6">
-            <h2 class="text-xl font-bold">Ваш Семейный ID</h2>
-            <div class="p-6 bg-indigo-50 rounded-2xl text-center">
-                <span id="display-family-id" class="text-3xl font-mono font-black text-indigo-600">......</span>
+            <h2 class="text-xl font-bold text-slate-800">Ваш Семейный ID</h2>
+            <div class="p-8 bg-indigo-50 rounded-[2rem] text-center border-2 border-indigo-100">
+                <span id="display-family-id" class="text-4xl font-mono font-black text-indigo-600 tracking-[0.2em]">......</span>
             </div>
-            <button id="btn-parent-go" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">ДАЛЕЕ</button>
+            <p class="text-sm text-slate-500 text-center px-4">Ребенок должен ввести этот ID при подключении к вашей семейной группе.</p>
+            <button id="btn-parent-go" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 active:scale-95 transition-all">К НАСТРОЙКАМ ТЕСТА</button>
         </div>
 
-        <!-- ПАНЕЛЬ РОДИТЕЛЯ -->
-        <div id="view-parent-dash" class="view-section space-y-4">
-            <div class="bg-slate-800 text-white p-4 rounded-2xl mb-4">Панель управления</div>
-            <input type="text" id="p-subject" placeholder="Предмет" class="w-full p-4 bg-slate-100 rounded-xl outline-none">
-            <input type="text" id="p-code" placeholder="КЛЮЧ ДОСТУПА (например: 5555)" class="w-full p-4 bg-indigo-50 border-2 border-indigo-200 rounded-xl font-bold outline-none">
-            <button id="btn-send-task" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">ОТПРАВИТЬ</button>
-            <p id="p-status" class="text-center text-xs"></p>
+        <!-- DASHBOARD РОДИТЕЛЯ -->
+        <div id="view-parent-dash" class="view-section space-y-5">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-8 bg-indigo-600 rounded-full"></div>
+                <h2 class="text-xl font-bold text-slate-800">Генератор заданий</h2>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Сложность (Класс)</label>
+                    <div class="grid grid-cols-3 gap-2 mt-1">
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all active" data-val="1-3">1-3 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="4-5">4-5 кл</button>
+                        <button class="diff-btn p-3 border-2 border-slate-100 rounded-xl text-sm font-bold transition-all" data-val="6-9">6-9 кл</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Предмет</label>
+                    <select id="p-subject" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl outline-none focus:border-indigo-400 transition-all mt-1">
+                        <!-- Динамический список -->
+                    </select>
+                </div>
+
+                <div id="other-subject-container" class="hidden animate-pulse">
+                    <label class="text-[10px] font-bold text-indigo-500 uppercase ml-1">Своя тема (ИИ сгенерирует по ней)</label>
+                    <input type="text" id="p-subject-other" placeholder="Напр: Столицы мира или Умножение на 7" class="w-full p-4 bg-white border-2 border-indigo-200 rounded-xl outline-none focus:border-indigo-600 transition-all mt-1">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Количество задач: <span id="p-count-val" class="text-indigo-600">3</span></label>
+                    <input type="range" id="p-count" min="1" max="10" value="3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-2">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Ключ доступа (результат)</label>
+                    <input type="text" id="p-code" placeholder="Напр: 2026" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-center outline-none focus:border-indigo-400 transition-all mt-1">
+                </div>
+            </div>
+            
+            <button id="btn-send-task" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
+                <i class="fas fa-paper-plane"></i> ОТПРАВИТЬ РЕБЕНКУ
+            </button>
+            <p id="p-status" class="text-center text-xs font-bold"></p>
         </div>
 
-        <!-- ПРИВЯЗКА РЕБЕНКА -->
+        <!-- SETUP РЕБЕНКА -->
         <div id="view-child-setup" class="view-section space-y-4">
             <h2 class="text-xl font-bold">Подключение</h2>
-            <input type="text" id="input-family-id" placeholder="ID РОДИТЕЛЯ" class="w-full p-4 bg-slate-100 rounded-xl uppercase text-center font-bold">
-            <button id="btn-link-child" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold">ВОЙТИ</button>
+            <input type="text" id="input-family-id" placeholder="ID РОДИТЕЛЯ" class="w-full p-5 bg-slate-100 rounded-2xl uppercase text-center font-black tracking-widest text-2xl outline-none border-4 border-transparent focus:border-orange-400 transition-all">
+            <button id="btn-link-child" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-orange-100 active:scale-95 transition-all">ПОДКЛЮЧИТЬСЯ</button>
         </div>
 
-        <!-- ПАНЕЛЬ РЕБЕНКА -->
+        <!-- DASHBOARD РЕБЕНКА -->
         <div id="view-child-dash" class="view-section h-full justify-center text-center">
             <div id="no-task" class="space-y-4">
-                <i class="fas fa-clock text-4xl text-slate-200"></i>
-                <p>Ждем задание от родителей...</p>
+                <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-300">
+                    <i class="fas fa-hourglass-half text-3xl"></i>
+                </div>
+                <p class="text-slate-400 font-medium">Ждем задание от родителей...</p>
             </div>
             <div id="has-task" class="hidden space-y-6">
-                <div class="p-6 bg-orange-50 rounded-2xl border-2 border-orange-100">
-                    <h2 id="c-task-title" class="text-xl font-bold">...</h2>
+                <div class="p-8 bg-orange-50 rounded-[2.5rem] border-2 border-orange-100 relative overflow-hidden">
+                    <div class="absolute -top-6 -right-6 w-20 h-20 bg-orange-200 rounded-full opacity-20"></div>
+                    <p class="text-[10px] uppercase font-black text-orange-400 mb-2 tracking-widest">Новый вызов</p>
+                    <h2 id="c-task-title" class="text-2xl font-black text-orange-800">...</h2>
+                    <p id="c-task-info" class="text-sm text-orange-600 mt-2 font-bold"></p>
                 </div>
-                <button id="btn-start-solve" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold">НАЧАТЬ ТЕСТ</button>
+                <button id="btn-start-solve" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-lg shadow-2xl shadow-orange-200 active:scale-95 transition-all">ПРИНЯТЬ И РЕШИТЬ</button>
             </div>
         </div>
 
         <!-- ЭКРАН РЕШЕНИЯ -->
         <div id="view-solve" class="view-section h-full">
             <div class="flex justify-between items-center mb-6">
-                <div id="solve-loader" class="loader hidden"></div>
-                <div id="error-count" class="text-red-500 font-bold text-xs uppercase">Ошибки: 0/3</div>
+                <div class="flex items-center gap-2">
+                    <div id="solve-loader" class="loader"></div>
+                    <span id="step-counter" class="text-xs font-bold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full">Загрузка...</span>
+                </div>
+                <div id="error-count" class="text-red-500 font-bold text-[10px] uppercase bg-red-50 px-3 py-1 rounded-full">Ошибки: 0/3</div>
             </div>
-            <div id="q-area" class="flex-1">
-                <div class="bg-slate-900 text-white p-6 rounded-3xl text-center mb-6">
-                    <p id="q-text" class="text-lg">Загрузка вопроса...</p>
+            <div id="q-area" class="flex-1 flex flex-col justify-center">
+                <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] text-center mb-8 shadow-2xl relative">
+                    <i class="fas fa-quote-left absolute top-4 left-6 text-slate-700 text-2xl"></i>
+                    <p id="q-text" class="text-lg leading-relaxed font-medium">Готовим ваш вопрос...</p>
                 </div>
                 <div id="options-grid" class="grid gap-3"></div>
             </div>
@@ -102,17 +154,24 @@
 
         <!-- БЛОКИРОВКА -->
         <div id="view-lockout" class="view-section h-full justify-center text-center">
-            <h2 class="text-xl font-bold text-red-600 mb-4">БЛОКИРОВКА</h2>
-            <div id="timer-display" class="text-5xl font-mono font-black mb-6">10:00</div>
-            <p class="text-sm text-slate-500">Слишком много ошибок. Отдохни.</p>
+            <i class="fas fa-lock text-6xl text-red-500 mb-6"></i>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">ДОСТУП ОГРАНИЧЕН</h2>
+            <div id="timer-display" class="text-5xl font-mono font-black text-red-600 mb-6">10:00</div>
+            <p class="text-sm text-slate-500 px-8 leading-relaxed">Слишком много ошибок. Мозг должен отдохнуть 10 минут перед следующей попыткой.</p>
         </div>
 
         <!-- ФИНАЛ -->
         <div id="view-final-code" class="view-section h-full justify-center text-center">
-            <h2 class="text-2xl font-bold mb-4">ГОТОВО!</h2>
-            <p class="mb-4">Твой ключ доступа:</p>
-            <div class="p-8 bg-slate-900 text-indigo-400 rounded-3xl text-4xl font-black tracking-widest" id="final-key">----</div>
-            <button id="btn-finish" class="mt-8 text-slate-400 underline">Завершить</button>
+            <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <i class="fas fa-trophy text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800 mb-2">УСПЕХ!</h2>
+            <p class="text-slate-500 mb-8">Ты молодец! Твой ключ доступа:</p>
+            <div class="p-10 bg-indigo-600 text-white rounded-[3rem] text-5xl font-black tracking-[0.2em] shadow-2xl shadow-indigo-300 relative" id="final-key">
+                ----
+                <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full border-4 border-white"></div>
+            </div>
+            <button id="btn-finish" class="mt-12 text-slate-400 font-bold hover:text-indigo-600 transition-colors">ЗАВЕРШИТЬ</button>
         </div>
     </main>
 </div>
@@ -122,7 +181,6 @@
     import { getFirestore, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    // Использованы предоставленные пользователем данные конфигурации
     const firebaseConfig = {
         apiKey: "AIzaSyBIQjy3dFSGd9QGgV4BatCzdJTmdZ0iZi4",
         authDomain: "mesenger-12877.firebaseapp.com",
@@ -137,17 +195,23 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     const appId = "smartkey-gh-deployment";
-    const AI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=";
 
-    // В GitHub версии API ключ для Gemini обычно пустой, если он прокидывается через среду, 
-    // но здесь мы оставляем заглушку. Если у вас есть свой ключ Gemini, вставьте его ниже.
-    const geminiApiKey = ""; 
+    // AI SETTINGS (OPENROUTER)
+    const OPENROUTER_API_KEY = "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";
+    const AI_MODEL = "arcee-ai/trinity-large-preview:free";
 
     let familyId = localStorage.getItem('sk_family_id');
     let userRole = localStorage.getItem('sk_role');
     let activeTask = null;
-    let solveStep = 0;
+    let currentStep = 0;
     let errorCount = 0;
+    let selectedDiff = "1-3";
+
+    const subjectsByDiff = {
+        "1-3": ["Математика", "Русский язык", "Окружающий мир", "Логика", "Другое"],
+        "4-5": ["Математика", "Русский язык", "Литература", "Английский язык", "Логика", "Другое"],
+        "6-9": ["Алгебра", "Геометрия", "Физика", "Биология", "История", "География", "Другое"]
+    };
 
     function switchView(id) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -155,36 +219,70 @@
         if(el) el.classList.add('active');
     }
 
+    const safeSignIn = async (retries = 3) => {
+        for(let i=0; i<retries; i++){
+            try { return await signInAnonymously(auth); } catch(e) { 
+                if(i === retries-1) document.getElementById('auth-error-msg').classList.remove('hidden');
+                await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+    };
+
+    function updateSubjects() {
+        const select = document.getElementById('p-subject');
+        select.innerHTML = '';
+        subjectsByDiff[selectedDiff].forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s; opt.innerText = s;
+            select.appendChild(opt);
+        });
+        checkOtherField();
+    }
+
+    function checkOtherField() {
+        const isOther = document.getElementById('p-subject').value === "Другое";
+        document.getElementById('other-subject-container').style.display = isOther ? "block" : "none";
+    }
+
+    // Event Listeners for Parent Dash
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedDiff = btn.dataset.val;
+            updateSubjects();
+        }
+    });
+
+    document.getElementById('p-subject').onchange = checkOtherField;
+    document.getElementById('p-count').oninput = (e) => document.getElementById('p-count-val').innerText = e.target.value;
+
     const selectRole = async (role) => {
         userRole = role;
         localStorage.setItem('sk_role', role);
-        try {
-            await signInAnonymously(auth);
-            if (role === 'parent') {
-                if (!familyId) {
-                    familyId = Math.random().toString(36).substring(2, 8).toUpperCase();
-                    localStorage.setItem('sk_family_id', familyId);
-                }
-                document.getElementById('display-family-id').innerText = familyId;
-                updateBadge();
-                switchView('parent-setup');
-            } else {
-                switchView('child-setup');
+        await safeSignIn();
+        if (role === 'parent') {
+            if (!familyId) {
+                familyId = Math.random().toString(36).substring(2, 8).toUpperCase();
+                localStorage.setItem('sk_family_id', familyId);
             }
-        } catch (e) {
-            console.error("Auth error:", e);
+            document.getElementById('display-family-id').innerText = familyId;
+            updateBadge();
+            switchView('parent-setup');
+            updateSubjects();
+        } else {
+            switchView('child-setup');
         }
     };
 
     function updateBadge() {
         if (familyId) {
-            const badge = document.getElementById('family-badge');
-            badge.innerText = `ID: ${familyId}`;
-            badge.classList.remove('hidden');
+            const b = document.getElementById('family-badge');
+            b.innerText = `ID: ${familyId}`;
+            b.classList.remove('hidden');
         }
     }
 
-    // Привязка событий
     document.getElementById('btn-role-parent').onclick = () => selectRole('parent');
     document.getElementById('btn-role-child').onclick = () => selectRole('child');
     document.getElementById('btn-parent-go').onclick = () => switchView('parent-dash');
@@ -195,7 +293,7 @@
         if (val.length < 3) return;
         familyId = val;
         localStorage.setItem('sk_family_id', familyId);
-        await signInAnonymously(auth);
+        await safeSignIn();
         updateBadge();
         switchView('child-dash');
         listenForTasks();
@@ -203,30 +301,27 @@
 
     document.getElementById('btn-send-task').onclick = async () => {
         if (!familyId) return;
+        const sub = document.getElementById('p-subject').value;
+        const other = document.getElementById('p-subject-other').value;
         const data = {
-            subject: document.getElementById('p-subject').value || "Математика",
-            code: document.getElementById('p-code').value || "0000",
+            subject: sub === "Другое" ? `Другое (${other})` : sub,
+            real_subject: sub === "Другое" ? other : sub,
+            difficulty: selectedDiff,
+            count: parseInt(document.getElementById('p-count').value),
+            code: document.getElementById('p-code').value || "1234",
             ts: Date.now()
         };
         try {
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId), data);
-            document.getElementById('p-status').innerText = "✅ Отправлено";
-        } catch (e) {
-            document.getElementById('p-status').innerText = "❌ Ошибка доступа";
-        }
+            document.getElementById('p-status').innerText = "✅ ЗАДАНИЕ ОТПРАВЛЕНО";
+            setTimeout(() => document.getElementById('p-status').innerText = "", 3000);
+        } catch(e) { document.getElementById('p-status').innerText = "❌ Ошибка БД"; }
     };
 
     document.getElementById('btn-start-solve').onclick = () => {
-        solveStep = 0; errorCount = 0;
+        currentStep = 0; errorCount = 0;
         switchView('solve');
         loadAIQuestion();
-    };
-
-    document.getElementById('btn-finish').onclick = async () => {
-        try {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId));
-        } catch (e) {}
-        switchView('child-dash');
     };
 
     function listenForTasks() {
@@ -237,38 +332,46 @@
                 document.getElementById('no-task').classList.add('hidden');
                 document.getElementById('has-task').classList.remove('hidden');
                 document.getElementById('c-task-title').innerText = activeTask.subject;
+                document.getElementById('c-task-info').innerText = `${activeTask.count} задач • Класс ${activeTask.difficulty}`;
             } else {
                 document.getElementById('no-task').classList.remove('hidden');
                 document.getElementById('has-task').classList.add('hidden');
             }
-        }, (err) => console.error("Snapshot error:", err));
+        });
     }
 
     async function loadAIQuestion() {
         const loader = document.getElementById('solve-loader');
         loader.classList.remove('hidden');
+        document.getElementById('step-counter').innerText = `Вопрос ${currentStep + 1}/${activeTask.count}`;
         
-        // Внимание: Здесь используется geminiApiKey. Если он пустой, сработает заглушка в catch.
-        const url = `${AI_URL}${geminiApiKey}`;
-        const prompt = `Generate 1 educational multiple-choice question about ${activeTask?.subject || 'General Knowledge'}. Return ONLY a JSON object: {"q":"question text","opts":["choice1","choice2","choice3","choice4"],"a":"correct choice text"}. Language: Russian.`;
-        
+        const prompt = `Генерация вопроса для ребенка. 
+        Предмет: ${activeTask.real_subject}. 
+        Класс: ${activeTask.difficulty}. 
+        Язык: Русский. 
+        Ответ верни строго в формате JSON: {"q":"текст вопроса","opts":["вариант1","вариант2","вариант3","вариант4"],"a":"правильный текст"}`;
+
         try {
-            const res = await fetch(url, {
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } })
+                headers: {
+                    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: AI_MODEL,
+                    messages: [{ role: "user", content: prompt }]
+                })
             });
-            const json = await res.json();
-            const task = JSON.parse(json.candidates[0].content.parts[0].text);
+            const data = await response.json();
+            const content = data.choices[0].message.content;
+            const task = JSON.parse(content.match(/\{.*\}/s)[0]);
             renderTask(task);
         } catch (e) {
-            // Заглушка, если API ключ не указан или ошибка
-            const mockTasks = [
-                {q: "Сколько будет 2 + 2 * 2?", opts: ["4", "6", "8", "10"], a: "6"},
-                {q: "Столица Франции?", opts: ["Лондон", "Берлин", "Париж", "Рим"], a: "Париж"},
-                {q: "Какая планета третья от Солнца?", opts: ["Марс", "Венера", "Земля", "Юпитер"], a: "Земля"}
-            ];
-            renderTask(mockTasks[Math.floor(Math.random() * mockTasks.length)]);
+            console.error(e);
+            // Fallback
+            const fallback = { q: `Ошибка связи с ИИ. Сколько будет 10 + ${Math.floor(Math.random()*20)}?`, opts: ["15", "25", "30", "12"], a: "---" };
+            renderTask(fallback);
         } finally { loader.classList.add('hidden'); }
     }
 
@@ -280,12 +383,12 @@
         
         task.opts.forEach(opt => {
             const b = document.createElement('button');
-            b.className = "w-full p-4 bg-slate-100 rounded-xl font-bold hover:bg-indigo-50 transition-colors";
+            b.className = "w-full p-4 bg-slate-100 rounded-2xl font-bold hover:bg-indigo-50 border-2 border-transparent hover:border-indigo-200 transition-all text-slate-700";
             b.innerText = opt;
             b.onclick = () => {
-                if (opt === task.a) {
-                    solveStep++;
-                    if (solveStep >= 3) {
+                if (opt === task.a || task.a === "---") {
+                    currentStep++;
+                    if (currentStep >= activeTask.count) {
                         document.getElementById('final-key').innerText = activeTask.code;
                         switchView('final-code');
                     } else loadAIQuestion();
@@ -294,8 +397,10 @@
                     if (errorCount >= 3) {
                         switchView('lockout');
                         startLockoutTimer();
+                    } else {
+                        document.getElementById('error-count').innerText = `Ошибки: ${errorCount}/3`;
+                        loadAIQuestion(); 
                     }
-                    else loadAIQuestion();
                 }
             };
             grid.appendChild(b);
@@ -303,36 +408,32 @@
     }
 
     function startLockoutTimer() {
-        let timeLeft = 600; // 10 минут
+        let left = 600;
         const display = document.getElementById('timer-display');
-        const interval = setInterval(() => {
-            timeLeft--;
-            const m = Math.floor(timeLeft / 60);
-            const s = timeLeft % 60;
+        const it = setInterval(() => {
+            left--;
+            const m = Math.floor(left/60), s = left%60;
             display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                switchView('child-dash');
-            }
+            if (left <= 0) { clearInterval(it); switchView('child-dash'); }
         }, 1000);
     }
 
-    // Авто-вход
+    document.getElementById('btn-finish').onclick = async () => {
+        try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'family_tasks', familyId)); } catch (e) {}
+        location.reload();
+    };
+
     window.onload = async () => {
         if (familyId && userRole) {
             updateBadge();
-            try {
-                await signInAnonymously(auth);
-                if (userRole === 'parent') {
-                    document.getElementById('display-family-id').innerText = familyId;
-                    switchView('parent-dash');
-                } else {
-                    switchView('child-dash');
-                    listenForTasks();
-                }
-            } catch (e) {
-                console.error("Initial auth failed:", e);
-                switchView('role-selection');
+            await safeSignIn();
+            if (userRole === 'parent') {
+                document.getElementById('display-family-id').innerText = familyId;
+                switchView('parent-dash');
+                updateSubjects();
+            } else {
+                switchView('child-dash');
+                listenForTasks();
             }
         }
     };

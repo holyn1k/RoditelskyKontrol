@@ -196,9 +196,9 @@
     const auth = getAuth(app);
     const appId = "smartkey-gh-deployment";
 
-    // AI SETTINGS (OPENROUTER)
+    // AI SETTINGS (OPENROUTER) - Switched to Gemini Flash for better reliability
     const OPENROUTER_API_KEY = "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";
-    const AI_MODEL = "arcee-ai/trinity-large-preview:free";
+    const AI_MODEL = "google/gemini-2.0-flash-exp:free";
 
     let familyId = localStorage.getItem('sk_family_id');
     let userRole = localStorage.getItem('sk_role');
@@ -230,6 +230,7 @@
 
     function updateSubjects() {
         const select = document.getElementById('p-subject');
+        if(!select) return;
         select.innerHTML = '';
         subjectsByDiff[selectedDiff].forEach(s => {
             const opt = document.createElement('option');
@@ -240,7 +241,9 @@
     }
 
     function checkOtherField() {
-        const isOther = document.getElementById('p-subject').value === "Другое";
+        const pSub = document.getElementById('p-subject');
+        if(!pSub) return;
+        const isOther = pSub.value === "Другое";
         document.getElementById('other-subject-container').style.display = isOther ? "block" : "none";
     }
 
@@ -254,8 +257,11 @@
         }
     });
 
-    document.getElementById('p-subject').onchange = checkOtherField;
-    document.getElementById('p-count').oninput = (e) => document.getElementById('p-count-val').innerText = e.target.value;
+    const pSub = document.getElementById('p-subject');
+    if(pSub) pSub.onchange = checkOtherField;
+    
+    const pCount = document.getElementById('p-count');
+    if(pCount) pCount.oninput = (e) => document.getElementById('p-count-val').innerText = e.target.value;
 
     const selectRole = async (role) => {
         userRole = role;
@@ -340,7 +346,6 @@
         });
     }
 
-    // Helper for exponential backoff retries
     async function fetchWithRetry(url, options, maxRetries = 3) {
         for (let i = 0; i < maxRetries; i++) {
             try {
@@ -367,8 +372,8 @@
         Предмет: ${activeTask.real_subject}
         Класс: ${activeTask.difficulty}
         Язык: Русский
-        Формат ответа: Только чистый JSON объект без пояснений.
-        JSON формат: {"q": "текст вопроса", "opts": ["вариант1", "вариант2", "вариант3", "вариант4"], "a": "правильный текст из списка opts"}`;
+        Формат ответа: Только чистый JSON.
+        JSON формат: {"q": "текст вопроса", "opts": ["вариант1", "вариант2", "вариант3", "вариант4"], "a": "правильный ответ из списка"}`;
 
         try {
             const data = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
@@ -380,24 +385,26 @@
                 body: JSON.stringify({
                     model: AI_MODEL,
                     messages: [{ role: "user", content: prompt }],
-                    temperature: 0.7
+                    temperature: 0.5
                 })
             });
 
-            const content = data.choices[0].message.content.trim();
-            // Clean markdown if AI wrapped JSON in ```json
-            const jsonStr = content.replace(/```json|```/g, "").trim();
-            const task = JSON.parse(jsonStr);
+            let content = data.choices[0].message.content.trim();
+            // Robust cleaning for JSON
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                content = jsonMatch[0];
+            }
             
-            if (!task.q || !task.opts || !task.a) throw new Error("Invalid task format");
+            const task = JSON.parse(content);
+            if (!task.q || !task.opts || !task.a) throw new Error("Invalid format");
             renderTask(task);
         } catch (e) {
             console.error("AI Error:", e);
-            // Fallback content in case of persistent failures
             const fallback = { 
-                q: `Не удалось загрузить вопрос от ИИ. Реши пример: ${Math.floor(Math.random()*20)} + ${Math.floor(Math.random()*20)}?`, 
-                opts: ["40", "20", "15", "Нужен интернет"], 
-                a: "---" // Logic to skip validation for manual entry if needed, but here simple math logic could be added
+                q: `Реши пример: ${Math.floor(Math.random()*15)} + ${Math.floor(Math.random()*15)}?`, 
+                opts: ["5", "10", "15", "20"], 
+                a: "---" 
             };
             renderTask(fallback);
         } finally { loader.classList.add('hidden'); }
@@ -414,9 +421,7 @@
             b.className = "w-full p-4 bg-slate-100 rounded-2xl font-bold hover:bg-indigo-50 border-2 border-transparent hover:border-indigo-200 transition-all text-slate-700";
             b.innerText = opt;
             b.onclick = () => {
-                // If it's a fallback or correct answer
                 const isCorrect = task.a === "---" || opt === task.a;
-                
                 if (isCorrect) {
                     currentStep++;
                     if (currentStep >= activeTask.count) {
@@ -459,7 +464,8 @@
             updateBadge();
             await safeSignIn();
             if (userRole === 'parent') {
-                document.getElementById('display-family-id').innerText = familyId;
+                const disp = document.getElementById('display-family-id');
+                if(disp) disp.innerText = familyId;
                 switchView('parent-dash');
                 updateSubjects();
             } else {
